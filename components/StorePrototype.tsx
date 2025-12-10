@@ -1,8 +1,93 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Star, Timer, X, Plus, Minus, ArrowRight, Heart, Sparkles, HelpCircle, Ruler, FileText, PenTool } from 'lucide-react';
-import { Product, CartItem } from '../types';
+import { ShoppingBag, Star, X, Plus, Minus, ArrowRight, Sparkles, Ruler, FileText, PenTool, CheckCircle } from 'lucide-react';
 
-// 擴充商品資料庫
+// --- 新增：動態顯化能量卡片元件 (源自你的設計) ---
+const ManifestVisual = () => {
+  return (
+    <div className="relative w-full h-96 overflow-hidden rounded-2xl bg-[#FDFBF7] flex items-center justify-center">
+      {/* 定義動畫樣式 */}
+      <style>{`
+        @keyframes levitate { 
+          0%, 100% { transform: translateY(0); } 
+          50% { transform: translateY(-15px); } 
+        }
+        @keyframes float-orb { 
+          0% { transform: translate(0, 0); } 
+          100% { transform: translate(30px, 40px); } 
+        }
+        @keyframes shine { 
+          to { background-position: 200% center; } 
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0; transform: scale(0.5); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        .text-shine {
+          background: linear-gradient(135deg, #8B5E3C 0%, #D4AF37 40%, #FEE176 50%, #D4AF37 60%, #8B5E3C 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shine 5s linear infinite;
+          filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+        }
+      `}</style>
+
+      {/* 背景氛圍 (呼吸光暈) */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-96 h-96 rounded-full bg-[#FFE4E1] blur-[80px] opacity-60 animate-[float-orb_10s_ease-in-out_infinite_alternate]"></div>
+        <div className="absolute bottom-[10%] left-[10%] w-72 h-72 rounded-full bg-[#E6E6FA] blur-[80px] opacity-60 animate-[float-orb_10s_ease-in-out_infinite_alternate]" style={{ animationDelay: '-5s' }}></div>
+        <div className="absolute top-[40%] left-[50%] w-64 h-64 rounded-full bg-[#FFFACD] blur-[80px] opacity-40 translate-x-[-50%] translate-y-[-50%]"></div>
+      </div>
+
+      {/* 主要卡片 (玻璃擬態 + 懸浮) */}
+      <div className="relative z-10 w-72 h-[28rem] animate-[levitate_6s_ease-in-out_infinite]">
+        <div className="w-full h-full bg-white/45 backdrop-blur-md border border-white/60 rounded-lg shadow-[0_20px_40px_rgba(186,166,142,0.15)] flex items-center justify-center relative overflow-hidden">
+            
+            {/* 紙張紋理效果 */}
+            <div className="absolute inset-0 opacity-50 mix-blend-multiply pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cream-paper.png')" }}></div>
+            
+            {/* 內框線 */}
+            <div className="absolute inset-5 border border-[#C44536]/15 pointer-events-none"></div>
+
+            {/* 閃光裝飾 */}
+            <div className="absolute w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_10px_2px_#FFFACD] animate-[twinkle_3s_infinite] top-[20%] left-[20%]"></div>
+            <div className="absolute w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_10px_2px_#FFFACD] animate-[twinkle_3s_infinite] bottom-[30%] right-[25%]" style={{ animationDelay: '1s' }}></div>
+
+            {/* 流動燙金文字 */}
+            <div className="writing-vertical-rl text-4xl font-serif font-bold tracking-[0.5em] z-20 text-shine">
+              心想事成萬物生
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- 以下是原本的商店邏輯與資料 ---
+
+interface CoupletText {
+  upper: string;
+  lower: string;
+  horizontal: string;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  subtitle: string;
+  coupletText: CoupletText;
+  meaning: string;
+  description: string;
+  price: number;
+  remaining: number;
+  imageColor: string;
+  tags: string[];
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
+
 const products: Product[] = [
   {
     id: 1,
@@ -17,7 +102,7 @@ const products: Product[] = [
     description: "這不僅是一幅春聯，這是一張向宇宙發出的訂單。採用頂級「紅萊妮」美術紙，紙張具有獨特的十字壓紋質感，觸感溫潤厚實。字體使用傳統隸書並以高磅數燙金工藝呈現，象徵財富能量的固化與閃耀。適合貼於玄關或辦公室，每日出門前默念一次，強化潛意識中的富足感。",
     price: 580,
     remaining: 12,
-    imageColor: "bg-leny-red",
+    imageColor: "bg-red-700",
     tags: ["事業", "財富", "能量"]
   },
   {
@@ -33,7 +118,7 @@ const products: Product[] = [
     description: "在這個喧囂的世界，平靜是最奢侈的財富。紅萊妮紙沈穩的紅色調，搭配燙金隸書的古樸氣質，自帶一種靜謐的氣場。適合貼於書房或臥室，提醒自己：外境越是紛亂，內心越要如止水般清澈。",
     price: 480,
     remaining: 8,
-    imageColor: "bg-leny-red",
+    imageColor: "bg-red-700",
     tags: ["療癒", "健康", "睡眠"]
   },
   {
@@ -49,7 +134,7 @@ const products: Product[] = [
     description: "愛不是尋找，而是吸引。這幅春聯設計旨在調整你的頻率至「愛」的層次。萊妮紙細緻的紋理如同情感的交織，燙金字體則如同真愛般歷久彌新。無論是期待新戀情，還是希望現有關係昇華，它都是最好的頻率錨點。",
     price: 520,
     remaining: 5,
-    imageColor: "bg-leny-red",
+    imageColor: "bg-red-700",
     tags: ["感情", "人緣", "家庭"]
   },
   {
@@ -65,11 +150,12 @@ const products: Product[] = [
     description: "給正在舒適圈邊緣猶豫的你。隸書字體蒼勁有力，在紅萊妮紙上更顯莊重。燙金的光澤象徵著榮耀與勝利。每一次看見它，都是一次對自我能力的肯定，為你的 2025 年注入突破的勇氣。",
     price: 520,
     remaining: 20,
-    imageColor: "bg-leny-red",
+    imageColor: "bg-red-700",
     tags: ["創業", "突破", "勇氣"]
   }
 ];
 
+// 文字渲染元件
 const CoupletText = ({ text, horizontal = false }: { text: string, horizontal?: boolean }) => {
   return (
     <div className={`flex ${horizontal ? 'flex-row space-x-4' : 'flex-col space-y-4'} justify-center items-center`}>
@@ -85,6 +171,7 @@ const StorePrototype: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [email, setEmail] = useState("");
+  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
   // 購物車邏輯
   const addToCart = (product: Product) => {
@@ -112,10 +199,16 @@ const StorePrototype: React.FC = () => {
     }));
   };
 
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    setCheckoutSuccess(true);
+    setCart([]);
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-paper-bg relative">
+    <div className="min-h-screen bg-[#FDFBF7] relative font-sans text-stone-800">
       
       {/* 品牌故事 Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-b border-stone-200">
@@ -125,7 +218,7 @@ const StorePrototype: React.FC = () => {
               這不是迷信，<br/>這是心理學與美學的儀式。
             </h2>
             <p className="text-stone-600 text-lg leading-relaxed font-light">
-              傳統春聯祈求神明賜福，<strong className="text-couplet-red font-medium">心想製所</strong>則是用來校準你的內在頻率。
+              傳統春聯祈求神明賜福，<strong className="text-red-700 font-medium">心想製所</strong>則是用來校準你的內在頻率。
               根據吸引力法則，我們關注什麼，就顯化什麼。
             </p>
             <p className="text-stone-600 text-lg leading-relaxed font-light">
@@ -133,40 +226,33 @@ const StorePrototype: React.FC = () => {
               烙印在<strong className="text-stone-800">頂級紅萊妮紙</strong>上。
               這紅紙金字，將成為你居家空間最強大的能量錨點（Anchor）。
             </p>
+            
             <div className="flex gap-4 pt-4">
-              <div className="text-center px-4 py-3 bg-stone-100 rounded-lg">
-                <div className="text-couplet-red font-bold text-xl font-serif">100%</div>
+              <div className="text-center px-4 py-3 bg-white border border-stone-100 shadow-sm rounded-lg">
+                <div className="text-red-700 font-bold text-xl font-serif">100%</div>
                 <div className="text-xs text-stone-500 mt-1">紅萊妮紙</div>
               </div>
-              <div className="text-center px-4 py-3 bg-stone-100 rounded-lg">
-                <div className="text-couplet-red font-bold text-xl font-serif">燙金</div>
+              <div className="text-center px-4 py-3 bg-white border border-stone-100 shadow-sm rounded-lg">
+                <div className="text-red-700 font-bold text-xl font-serif">燙金</div>
                 <div className="text-xs text-stone-500 mt-1">高磅數工藝</div>
               </div>
-              <div className="text-center px-4 py-3 bg-stone-100 rounded-lg">
-                <div className="text-couplet-red font-bold text-xl font-serif">獨家</div>
+              <div className="text-center px-4 py-3 bg-white border border-stone-100 shadow-sm rounded-lg">
+                <div className="text-red-700 font-bold text-xl font-serif">獨家</div>
                 <div className="text-xs text-stone-500 mt-1">能量文案</div>
               </div>
             </div>
           </div>
-          <div className="relative h-96 bg-stone-200 rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 group">
-             {/* 模擬生活情境圖 */}
-             <div className="absolute inset-0 bg-stone-800/10 z-10 transition-opacity group-hover:opacity-0"></div>
-             <div className="absolute inset-0 flex items-center justify-center bg-[#FDFBF7]">
-                <div className="w-3/4 h-3/4 border-4 border-couplet-red/20 flex flex-col items-center justify-center p-8 text-center space-y-4 transition-all duration-700 group-hover:scale-105 group-hover:border-couplet-red/40">
-                    <div className="writing-vertical-rl text-4xl font-clerical text-stone-800 tracking-widest border-l border-stone-300 pl-4 py-4">
-                      <CoupletText text="心想事成萬物生" />
-                    </div>
-                    <p className="text-stone-400 text-sm mt-4 font-serif uppercase tracking-widest">Manifest Studio</p>
-                </div>
-             </div>
-          </div>
+
+          {/* 右側視覺：這裡使用了新的動態元件 */}
+          <ManifestVisual />
+
         </div>
       </div>
 
       {/* 商品列表 Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20" id="shop">
         <div className="text-center mb-16">
-          <span className="text-couplet-red font-bold tracking-widest uppercase text-sm bg-red-50 px-3 py-1 rounded-full">Pre-order Now</span>
+          <span className="text-red-700 font-bold tracking-widest uppercase text-sm bg-red-50 px-3 py-1 rounded-full">Pre-order Now</span>
           <h3 className="text-3xl font-serif font-bold text-stone-800 mt-4">2025 能量顯化系列</h3>
           <p className="text-stone-500 mt-2">紅萊妮紙 x 隸書燙金 x 能量文案</p>
         </div>
@@ -178,40 +264,31 @@ const StorePrototype: React.FC = () => {
               className="group bg-white rounded-xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer border border-stone-100 flex flex-col hover:-translate-y-2"
               onClick={() => setSelectedProduct(product)}
             >
-              {/* Image Area - 模擬牆面背景，展示完整春聯 */}
+              {/* Image Area */}
               <div className="h-96 bg-[#F2F0E9] relative p-6 flex flex-col items-center justify-center overflow-hidden">
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-stone-600 shadow-sm z-10">
-                   剩餘 {product.remaining} 組
+                    剩餘 {product.remaining} 組
                 </div>
-                
-                {/* 裝飾性光影 */}
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
 
-                {/* Visual Representation of Couplet - 完整 ㄇ 字型展示 */}
                 <div className="relative flex flex-col items-center gap-6 transition-transform duration-500 group-hover:scale-105">
-                   
-                   {/* 橫批 (Horizontal) */}
-                   <div className="bg-leny-red px-6 py-2 shadow-lg flex items-center justify-center border border-white/5 ring-1 ring-black/5 transform group-hover:-translate-y-1 transition-transform duration-700">
-                      <div className="text-gold-foil font-clerical text-lg">
+                    <div className="bg-red-700 px-6 py-2 shadow-lg flex items-center justify-center border border-white/5 ring-1 ring-black/5 transform group-hover:-translate-y-1 transition-transform duration-700">
+                      <div className="text-yellow-100 font-serif text-lg">
                         <CoupletText text={product.coupletText.horizontal} horizontal={true} />
                       </div>
-                   </div>
-
-                   {/* 上下聯 (Verticals) */}
-                   <div className="flex gap-12">
-                      {/* 上聯 */}
-                      <div className="w-10 bg-leny-red flex items-center justify-center font-clerical text-lg shadow-xl py-6 border border-white/5 ring-1 ring-black/5">
-                          <div className="text-gold-foil">
+                    </div>
+                    <div className="flex gap-12">
+                      <div className="w-10 bg-red-700 flex items-center justify-center font-serif text-lg shadow-xl py-6 border border-white/5 ring-1 ring-black/5">
+                          <div className="text-yellow-100">
                             <CoupletText text={product.coupletText.upper} />
                           </div>
                       </div>
-                      {/* 下聯 */}
-                      <div className="w-10 bg-leny-red flex items-center justify-center font-clerical text-lg shadow-xl py-6 border border-white/5 ring-1 ring-black/5">
-                          <div className="text-gold-foil">
+                      <div className="w-10 bg-red-700 flex items-center justify-center font-serif text-lg shadow-xl py-6 border border-white/5 ring-1 ring-black/5">
+                          <div className="text-yellow-100">
                             <CoupletText text={product.coupletText.lower} />
                           </div>
                       </div>
-                   </div>
+                    </div>
                 </div>
               </div>
 
@@ -235,7 +312,7 @@ const StorePrototype: React.FC = () => {
                       e.stopPropagation();
                       addToCart(product);
                     }}
-                    className="p-2.5 bg-stone-900 text-white rounded-full hover:bg-couplet-red transition-colors shadow-md group-hover:scale-110 duration-300"
+                    className="p-2.5 bg-stone-900 text-white rounded-full hover:bg-red-700 transition-colors shadow-md group-hover:scale-110 duration-300"
                   >
                     <ShoppingBag className="w-4 h-4" />
                   </button>
@@ -247,16 +324,16 @@ const StorePrototype: React.FC = () => {
       </div>
 
       {/* 評價/信任區塊 */}
-      <div className="bg-sage/10 border-y border-sage/20 py-16">
+      <div className="bg-[#EAECE8]/30 border-y border-stone-200 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <h3 className="text-2xl font-serif font-bold text-stone-800 text-center mb-12">使用者的顯化故事</h3>
            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { name: "Joanne, 32歲", role: "自由工作者", text: "收到實品真的很驚艷！紅萊妮紙的質感非常好，燙金在燈光下非常有層次，完全不像一般的塑膠春聯。", stars: 5 },
-                { name: "Mark, 28歲", role: "軟體工程師", text: "隸書字體很有味道，不落俗套。貼在門上感覺整個家的氣場都變穩了，很喜歡這種結合傳統與現代的設計。", stars: 5 },
-                { name: "Emily, 35歲", role: "花藝師", text: "紙張厚度很夠，貼起來很平整。文字內容很正向，每天進出門看到心情都很好，感覺 2025 會是很棒的一年。", stars: 5 }
-              ].map((review, i) => (
-                <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+             {[
+               { name: "Joanne, 32歲", role: "自由工作者", text: "收到實品真的很驚艷！紅萊妮紙的質感非常好，燙金在燈光下非常有層次，完全不像一般的塑膠春聯。", stars: 5 },
+               { name: "Mark, 28歲", role: "軟體工程師", text: "隸書字體很有味道，不落俗套。貼在門上感覺整個家的氣場都變穩了，很喜歡這種結合傳統與現代的設計。", stars: 5 },
+               { name: "Emily, 35歲", role: "花藝師", text: "紙張厚度很夠，貼起來很平整。文字內容很正向，每天進出門看到心情都很好，感覺 2025 會是很棒的一年。", stars: 5 }
+             ].map((review, i) => (
+               <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
                    <div className="flex text-amber-400 mb-3">
                      {[...Array(review.stars)].map((_, j) => <Star key={j} className="w-4 h-4 fill-current" />)}
                    </div>
@@ -270,8 +347,8 @@ const StorePrototype: React.FC = () => {
                         <div className="text-[10px] text-stone-500">{review.role}</div>
                       </div>
                    </div>
-                </div>
-              ))}
+               </div>
+             ))}
            </div>
         </div>
       </div>
@@ -280,7 +357,7 @@ const StorePrototype: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 py-16">
          <h3 className="text-2xl font-serif font-bold text-stone-800 text-center mb-8">常見問題</h3>
          <div className="space-y-4">
-            <details className="group bg-white rounded-lg border border-stone-200 open:border-couplet-red/30 transition-all">
+            <details className="group bg-white rounded-lg border border-stone-200 open:border-red-200 transition-all">
               <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-stone-800 list-none">
                 <span>出貨時間是什麼時候？</span>
                 <span className="transition-transform group-open:rotate-180"><ArrowRight className="w-4 h-4" /></span>
@@ -289,7 +366,7 @@ const StorePrototype: React.FC = () => {
                 這是預購商品。我們將於 2025年1月10日 統一依照訂單順序出貨，確保您在過年前（1月29日）能收到並完成佈置。
               </div>
             </details>
-            <details className="group bg-white rounded-lg border border-stone-200 open:border-couplet-red/30 transition-all">
+            <details className="group bg-white rounded-lg border border-stone-200 open:border-red-200 transition-all">
               <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-stone-800 list-none">
                 <span>請問材質是否適合戶外張貼？</span>
                 <span className="transition-transform group-open:rotate-180"><ArrowRight className="w-4 h-4" /></span>
@@ -301,9 +378,9 @@ const StorePrototype: React.FC = () => {
          </div>
       </div>
 
-      {/* Newsletter / CTA */}
+      {/* Newsletter */}
       <div className="bg-stone-900 text-white py-16 px-4 text-center">
-         <Sparkles className="w-8 h-8 text-couplet-gold mx-auto mb-4" />
+         <Sparkles className="w-8 h-8 text-yellow-500 mx-auto mb-4" />
          <h2 className="text-3xl font-serif font-bold mb-4">準備好迎接豐盛的一年了嗎？</h2>
          <p className="text-stone-400 mb-8 max-w-lg mx-auto">
            現在預購，隨單附贈「2025 顯化手帳」電子版下載連結。<br/>
@@ -313,17 +390,17 @@ const StorePrototype: React.FC = () => {
             <input 
               type="email" 
               placeholder="您的 Email" 
-              className="flex-1 px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-white placeholder-stone-500 focus:outline-none focus:ring-1 focus:ring-couplet-gold"
+              className="flex-1 px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-white placeholder-stone-500 focus:outline-none focus:ring-1 focus:ring-yellow-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <button className="px-6 py-3 bg-couplet-gold text-stone-900 font-bold rounded-lg hover:bg-yellow-600 transition-colors">
+            <button className="px-6 py-3 bg-yellow-600 text-stone-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors">
               領取優惠
             </button>
          </div>
       </div>
 
-      {/* Product Detail Modal */}
+      {/* Product Modal */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setSelectedProduct(null)}></div>
@@ -335,44 +412,37 @@ const StorePrototype: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
             
-            {/* Modal Image - 全版展示 */}
             <div className={`md:w-1/2 bg-[#F2F0E9] p-8 md:p-12 flex items-center justify-center min-h-[400px] border-r border-stone-100`}>
-               {/* 模擬門框或牆面背景 */}
                <div className="relative w-full h-full flex flex-col items-center justify-center gap-8">
-                  {/* 光影效果 */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none"></div>
 
-                  {/* 橫批 */}
-                  <div className="bg-leny-red px-8 py-3 rounded-sm font-clerical text-2xl md:text-3xl shadow-xl border border-white/5 ring-1 ring-black/5 z-10">
-                    <div className="text-gold-foil">
+                  <div className="bg-red-700 px-8 py-3 rounded-sm font-serif text-2xl md:text-3xl shadow-xl border border-white/5 ring-1 ring-black/5 z-10">
+                    <div className="text-yellow-100">
                         <CoupletText text={selectedProduct.coupletText.horizontal} horizontal={true} />
                     </div>
                   </div>
 
-                  {/* 上下聯 */}
                   <div className="flex gap-16 md:gap-24 scale-100 z-10">
-                     <div className="w-16 md:w-20 bg-leny-red flex items-center justify-center font-clerical text-2xl md:text-3xl font-bold shadow-2xl py-8 border border-white/5 ring-1 ring-black/5">
-                        <div className="text-gold-foil">
+                      <div className="w-16 md:w-20 bg-red-700 flex items-center justify-center font-serif text-2xl md:text-3xl font-bold shadow-2xl py-8 border border-white/5 ring-1 ring-black/5">
+                         <div className="text-yellow-100">
                             <CoupletText text={selectedProduct.coupletText.upper} />
-                        </div>
-                     </div>
-                     <div className="w-16 md:w-20 bg-leny-red flex items-center justify-center font-clerical text-2xl md:text-3xl font-bold shadow-2xl py-8 border border-white/5 ring-1 ring-black/5">
-                        <div className="text-gold-foil">
+                         </div>
+                      </div>
+                      <div className="w-16 md:w-20 bg-red-700 flex items-center justify-center font-serif text-2xl md:text-3xl font-bold shadow-2xl py-8 border border-white/5 ring-1 ring-black/5">
+                         <div className="text-yellow-100">
                             <CoupletText text={selectedProduct.coupletText.lower} />
-                        </div>
-                     </div>
+                         </div>
+                      </div>
                   </div>
                </div>
             </div>
 
-            {/* Modal Content */}
             <div className="md:w-1/2 p-8 md:p-12 bg-white flex flex-col text-center md:text-center">
-              <div className="mb-3 text-couplet-red font-bold text-sm tracking-wider uppercase inline-block mx-auto border-b border-red-100 pb-1">2025 Limited Edition</div>
+              <div className="mb-3 text-red-700 font-bold text-sm tracking-wider uppercase inline-block mx-auto border-b border-red-100 pb-1">2025 Limited Edition</div>
               <h2 className="text-3xl font-serif font-bold text-stone-900 mb-2">{selectedProduct.title}</h2>
               <p className="text-lg text-stone-500 mb-8 font-serif italic">{selectedProduct.subtitle}</p>
               
               <div className="space-y-8 mb-8 flex-1 text-left">
-                 {/* 規格表 */}
                 <div className="bg-stone-50 rounded-xl p-6 border border-stone-100 grid grid-cols-2 gap-y-6 gap-x-4">
                     <div className="flex flex-col items-center text-center">
                         <div className="p-2 bg-white rounded-full shadow-sm mb-2"><Ruler className="w-5 h-5 text-stone-400" /></div>
@@ -399,9 +469,9 @@ const StorePrototype: React.FC = () => {
 
                 <div className="px-4 overflow-x-auto pb-2">
                   <h4 className="font-bold text-stone-900 mb-3 flex items-center justify-center gap-2 text-lg">
-                    <Sparkles className="w-4 h-4 text-couplet-gold" /> 
+                    <Sparkles className="w-4 h-4 text-yellow-500" /> 
                     <span>設計寓意</span>
-                    <Sparkles className="w-4 h-4 text-couplet-gold" />
+                    <Sparkles className="w-4 h-4 text-yellow-500" />
                   </h4>
                   <p className="text-stone-600 text-base leading-relaxed text-justify">{selectedProduct.description}</p>
                 </div>
@@ -409,7 +479,7 @@ const StorePrototype: React.FC = () => {
 
               <div className="flex flex-col items-center border-t border-stone-100 pt-8 gap-6 mt-auto">
                 <div className="text-center">
-                   <span className="text-4xl font-bold text-couplet-red font-serif">NT$ {selectedProduct.price}</span>
+                   <span className="text-4xl font-bold text-red-700 font-serif">NT$ {selectedProduct.price}</span>
                    <p className="text-sm text-stone-400 mt-1">預購優惠價 (原價 $880)</p>
                 </div>
                 <div className="flex gap-4 w-full max-w-md">
@@ -424,14 +494,13 @@ const StorePrototype: React.FC = () => {
                     </button>
                     <button 
                       onClick={() => {
-                        console.log("Initiating direct checkout for product:", selectedProduct.title);
                         addToCart(selectedProduct);
                         setIsCartOpen(true);
                         setSelectedProduct(null);
                       }}
-                      className="flex-1 bg-stone-900 text-white px-8 py-4 rounded-xl font-medium hover:bg-couplet-red transition-all shadow-xl shadow-stone-200 flex items-center justify-center gap-2"
+                      className="flex-1 bg-stone-900 text-white px-8 py-4 rounded-xl font-medium hover:bg-red-700 transition-all shadow-xl shadow-stone-200 flex items-center justify-center gap-2"
                     >
-                       立即購買
+                        立即購買
                     </button>
                 </div>
               </div>
@@ -460,7 +529,7 @@ const StorePrototype: React.FC = () => {
                 <p>您的清單是空的</p>
                 <button 
                   onClick={() => setIsCartOpen(false)}
-                  className="text-couplet-red font-medium text-sm hover:underline"
+                  className="text-red-700 font-medium text-sm hover:underline"
                 >
                   去逛逛顯化春聯
                 </button>
@@ -468,10 +537,10 @@ const StorePrototype: React.FC = () => {
             ) : (
               cart.map(item => (
                 <div key={item.id} className="flex gap-4 animate-in slide-in-from-right-5">
-                  <div className={`w-20 h-24 bg-leny-red rounded-sm flex items-center justify-center flex-shrink-0 border border-stone-100 relative shadow-sm`}>
-                     <div className="text-gold-foil text-[10px] h-16 w-full flex justify-center items-center">
+                  <div className={`w-20 h-24 bg-red-700 rounded-sm flex items-center justify-center flex-shrink-0 border border-stone-100 relative shadow-sm`}>
+                      <div className="text-yellow-100 text-[10px] h-16 w-full flex justify-center items-center">
                         <CoupletText text={item.coupletText.upper} />
-                     </div>
+                      </div>
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-stone-800 font-serif">{item.title}</h4>
@@ -504,7 +573,10 @@ const StorePrototype: React.FC = () => {
                  <span>總計 (含運)</span>
                  <span>NT$ {cartTotal}</span>
                </div>
-               <button className="w-full bg-couplet-red text-white py-4 rounded-lg font-bold hover:bg-red-800 transition-colors shadow-lg flex items-center justify-center gap-2">
+               <button 
+                  onClick={handleCheckout}
+                  className="w-full bg-red-700 text-white py-4 rounded-lg font-bold hover:bg-red-800 transition-colors shadow-lg flex items-center justify-center gap-2"
+               >
                  前往結帳 <ArrowRight className="w-4 h-4" />
                </button>
                <p className="text-center text-xs text-stone-400 mt-4">
@@ -515,14 +587,37 @@ const StorePrototype: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating Cart Button (Mobile) */}
+      {/* Checkout Success Modal */}
+      {checkoutSuccess && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl scale-100 animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">訂單已成立！</h3>
+            <p className="text-stone-500 mb-6">
+              感謝您的預購。<br/>
+              顯化能量已經開始流動，<br/>
+              我們會儘快為您安排出貨。
+            </p>
+            <button 
+              onClick={() => setCheckoutSuccess(false)}
+              className="w-full bg-stone-900 text-white py-3 rounded-xl font-medium hover:bg-stone-800 transition-colors"
+            >
+              好的，我期待收到
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Cart Button */}
       {!isCartOpen && cart.length > 0 && (
         <button 
           onClick={() => setIsCartOpen(true)}
           className="fixed bottom-6 right-6 z-40 bg-stone-900 text-white p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform animate-bounce"
         >
           <ShoppingBag className="w-6 h-6" />
-          <span className="absolute -top-2 -right-2 bg-couplet-red text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
+          <span className="absolute -top-2 -right-2 bg-red-700 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
             {cart.reduce((a, b) => a + b.quantity, 0)}
           </span>
         </button>
