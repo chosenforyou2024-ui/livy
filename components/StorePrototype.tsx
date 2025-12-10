@@ -2,67 +2,85 @@ import React, { useState } from 'react';
 import { ShoppingBag, Star, X, Plus, Minus, ArrowRight, Sparkles, Ruler, FileText, PenTool, CheckCircle } from 'lucide-react';
 
 // --- 新增：動態顯化能量卡片元件 (源自你的設計) ---
+// --- 修改後的：ManifestVisual 元件 (頂級紅紙金字版) ---
 const ManifestVisual = () => {
   return (
-    <div className="relative w-full h-96 overflow-hidden rounded-2xl bg-[#FDFBF7] flex items-center justify-center">
-      {/* 定義動畫樣式 */}
+    <div className="relative w-full h-96 overflow-hidden rounded-2xl bg-[#FDFBF7] flex items-center justify-center group">
+      {/* CSS 動畫與材質樣式 */}
       <style>{`
         @keyframes levitate { 
-          0%, 100% { transform: translateY(0); } 
-          50% { transform: translateY(-15px); } 
-        }
-        @keyframes float-orb { 
-          0% { transform: translate(0, 0); } 
-          100% { transform: translate(30px, 40px); } 
+          0%, 100% { transform: translateY(0); box-shadow: 0 25px 50px -12px rgba(139, 0, 0, 0.25); } 
+          50% { transform: translateY(-10px); box-shadow: 0 40px 70px -15px rgba(139, 0, 0, 0.3); } 
         }
         @keyframes shine { 
-          to { background-position: 200% center; } 
+          0% { background-position: -100% center; }
+          100% { background-position: 200% center; } 
         }
-        @keyframes twinkle {
-          0%, 100% { opacity: 0; transform: scale(0.5); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        .text-shine {
-          background: linear-gradient(135deg, #8B5E3C 0%, #D4AF37 40%, #FEE176 50%, #D4AF37 60%, #8B5E3C 100%);
+        .gold-text-gradient {
+          background: linear-gradient(
+            120deg, 
+            #bf953f, 
+            #fcf6ba 25%, 
+            #b38728 50%, 
+            #fbf5b7 75%, 
+            #aa771c
+          );
           background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          animation: shine 5s linear infinite;
-          filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+          animation: shine 4s linear infinite;
+        }
+        /* 模擬紅萊妮紙的十字壓紋材質 */
+        .paper-texture {
+           background-color: #9B1C1C; /* 深紅底色 */
+           background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23771414' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M0 0h20v20H0V0zm1 1h18v18H1V1z'/%3E%3C/g%3E%3C/svg%3E");
         }
       `}</style>
 
-      {/* 背景氛圍 (呼吸光暈) */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-96 h-96 rounded-full bg-[#FFE4E1] blur-[80px] opacity-60 animate-[float-orb_10s_ease-in-out_infinite_alternate]"></div>
-        <div className="absolute bottom-[10%] left-[10%] w-72 h-72 rounded-full bg-[#E6E6FA] blur-[80px] opacity-60 animate-[float-orb_10s_ease-in-out_infinite_alternate]" style={{ animationDelay: '-5s' }}></div>
-        <div className="absolute top-[40%] left-[50%] w-64 h-64 rounded-full bg-[#FFFACD] blur-[80px] opacity-40 translate-x-[-50%] translate-y-[-50%]"></div>
+      {/* 背景裝飾光暈 (紅金氛圍) */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
+        <div className="absolute top-[-10%] right-[-10%] w-80 h-80 rounded-full bg-red-100/50 blur-[80px]"></div>
+        <div className="absolute bottom-[10%] left-[10%] w-60 h-60 rounded-full bg-amber-100/50 blur-[60px]"></div>
       </div>
 
-      {/* 主要卡片 (玻璃擬態 + 懸浮) */}
-      <div className="relative z-10 w-72 h-[28rem] animate-[levitate_6s_ease-in-out_infinite]">
-        <div className="w-full h-full bg-white/45 backdrop-blur-md border border-white/60 rounded-lg shadow-[0_20px_40px_rgba(186,166,142,0.15)] flex items-center justify-center relative overflow-hidden">
-            
-            {/* 紙張紋理效果 */}
-            <div className="absolute inset-0 opacity-50 mix-blend-multiply pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cream-paper.png')" }}></div>
-            
-            {/* 內框線 */}
-            <div className="absolute inset-5 border border-[#C44536]/15 pointer-events-none"></div>
+      {/* 紅紙春聯主體 (懸浮動畫) */}
+      <div className="relative z-10 w-64 h-[28rem] animate-[levitate_6s_ease-in-out_infinite] transition-transform duration-500 hover:scale-[1.02]">
+        
+        {/* 紅紙背景 + 紋理 */}
+        <div className="absolute inset-0 paper-texture rounded-sm shadow-2xl border-t border-white/10 border-l border-white/5"></div>
+        
+        {/* 內層裝飾框線 (雙金線) */}
+        <div className="absolute inset-3 border border-[#FCD34D]/40 pointer-events-none rounded-sm"></div>
+        <div className="absolute inset-4 border border-[#FCD34D]/20 pointer-events-none rounded-sm"></div>
 
-            {/* 閃光裝飾 */}
-            <div className="absolute w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_10px_2px_#FFFACD] animate-[twinkle_3s_infinite] top-[20%] left-[20%]"></div>
-            <div className="absolute w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_10px_2px_#FFFACD] animate-[twinkle_3s_infinite] bottom-[30%] right-[25%]" style={{ animationDelay: '1s' }}></div>
+        {/* 內容容器 */}
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+            {/* 直排文字容器 - 修正字距問題 */}
+            <div className="writing-vertical-rl flex flex-col items-center justify-center h-full w-full">
+              
+              {/* 頂部裝飾 */}
+              <div className="mb-6 opacity-80 animate-pulse">
+                 <Sparkles className="w-6 h-6 text-[#FCD34D]" />
+              </div>
 
-            {/* 流動燙金文字 */}
-            <div className="writing-vertical-rl text-4xl font-serif font-bold tracking-[0.5em] z-20 text-shine">
-              心想事成萬物生
+              {/* 主要文案 - 使用 Flex 確保置中且不散開 */}
+              <h2 className="text-5xl font-serif font-bold tracking-[0.3em] leading-normal gold-text-gradient select-none py-4 border-y border-transparent">
+                心想事成萬物生
+              </h2>
+
+              {/* 底部落款 */}
+              <div className="mt-8 pt-6 border-r border-[#FCD34D]/30 pr-2">
+                <span className="text-[#FCD34D]/80 text-xs font-serif tracking-[0.3em] writing-vertical-rl">
+                   乙巳年 ‧ 心想製所
+                </span>
+              </div>
+
             </div>
         </div>
       </div>
     </div>
   );
 };
-
 // --- 以下是原本的商店邏輯與資料 ---
 
 interface CoupletText {
