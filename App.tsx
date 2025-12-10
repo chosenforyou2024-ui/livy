@@ -36,12 +36,7 @@ const App: React.FC = () => {
               >
                 線上預購商店
               </button>
-               <button 
-                onClick={() => setActiveTab('analysis')}
-                className={`text-sm font-medium transition-all px-3 py-1 rounded-full ${activeTab === 'analysis' ? 'text-couplet-red bg-red-50' : 'text-stone-500 hover:text-stone-800'}`}
-              >
-                品牌創業實驗室 (AI)
-              </button>
+              
               <a href="#about" className="text-stone-500 hover:text-stone-800 text-sm font-medium">關於我們</a>
             </div>
 
@@ -62,12 +57,7 @@ const App: React.FC = () => {
               >
                 線上預購商店
               </button>
-             <button 
-                onClick={() => { setActiveTab('analysis'); setMobileMenuOpen(false); }}
-                className="block w-full text-left text-stone-700 font-medium py-3"
-              >
-                創業實驗室 (AI Demo)
-              </button>
+             
           </div>
         )}
       </nav>
