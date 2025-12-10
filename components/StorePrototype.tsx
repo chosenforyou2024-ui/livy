@@ -3,6 +3,7 @@ import { ShoppingBag, Star, X, Plus, Minus, ArrowRight, Sparkles, Ruler, FileTex
 
 // --- 新增：動態顯化能量卡片元件 (源自你的設計) ---
 // --- 修改後的：ManifestVisual 元件 (頂級紅紙金字版) ---
+// --- 修改後的：ManifestVisual 元件 (修正排版：強制單行不換行) ---
 const ManifestVisual = () => {
   return (
     <div className="relative w-full h-96 overflow-hidden rounded-2xl bg-[#FDFBF7] flex items-center justify-center group">
@@ -30,46 +31,47 @@ const ManifestVisual = () => {
           -webkit-text-fill-color: transparent;
           animation: shine 4s linear infinite;
         }
-        /* 模擬紅萊妮紙的十字壓紋材質 */
         .paper-texture {
-           background-color: #9B1C1C; /* 深紅底色 */
+           background-color: #9B1C1C;
            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23771414' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M0 0h20v20H0V0zm1 1h18v18H1V1z'/%3E%3C/g%3E%3C/svg%3E");
         }
       `}</style>
 
-      {/* 背景裝飾光暈 (紅金氛圍) */}
+      {/* 背景裝飾光暈 */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
         <div className="absolute top-[-10%] right-[-10%] w-80 h-80 rounded-full bg-red-100/50 blur-[80px]"></div>
         <div className="absolute bottom-[10%] left-[10%] w-60 h-60 rounded-full bg-amber-100/50 blur-[60px]"></div>
       </div>
 
-      {/* 紅紙春聯主體 (懸浮動畫) */}
+      {/* 紅紙春聯主體 */}
       <div className="relative z-10 w-64 h-[28rem] animate-[levitate_6s_ease-in-out_infinite] transition-transform duration-500 hover:scale-[1.02]">
         
-        {/* 紅紙背景 + 紋理 */}
+        {/* 紅紙背景 */}
         <div className="absolute inset-0 paper-texture rounded-sm shadow-2xl border-t border-white/10 border-l border-white/5"></div>
         
-        {/* 內層裝飾框線 (雙金線) */}
+        {/* 內層裝飾框線 */}
         <div className="absolute inset-3 border border-[#FCD34D]/40 pointer-events-none rounded-sm"></div>
         <div className="absolute inset-4 border border-[#FCD34D]/20 pointer-events-none rounded-sm"></div>
 
-        {/* 內容容器 */}
-        <div className="absolute inset-0 flex items-center justify-center p-8">
-            {/* 直排文字容器 - 修正字距問題 */}
+        {/* 內容容器 - padding 改為 p-4 以增加可用高度 */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="writing-vertical-rl flex flex-col items-center justify-center h-full w-full">
               
               {/* 頂部裝飾 */}
-              <div className="mb-6 opacity-80 animate-pulse">
+              <div className="mb-6 opacity-80 animate-pulse flex-shrink-0">
                  <Sparkles className="w-6 h-6 text-[#FCD34D]" />
               </div>
 
-              {/* 主要文案 - 使用 Flex 確保置中且不散開 */}
-              <h2 className="text-5xl font-serif font-bold tracking-[0.3em] leading-normal gold-text-gradient select-none py-4 border-y border-transparent">
+              {/* 主要文案：
+                  1. 改用 text-4xl (稍微縮小一點點以確保放入)
+                  2. 加上 whitespace-nowrap (強制不換行)
+              */}
+              <h2 className="text-4xl font-serif font-bold tracking-[0.3em] leading-normal gold-text-gradient select-none py-4 border-y border-transparent whitespace-nowrap">
                 心想事成萬物生
               </h2>
 
               {/* 底部落款 */}
-              <div className="mt-8 pt-6 border-r border-[#FCD34D]/30 pr-2">
+              <div className="mt-8 pt-6 border-r border-[#FCD34D]/30 pr-2 flex-shrink-0">
                 <span className="text-[#FCD34D]/80 text-xs font-serif tracking-[0.3em] writing-vertical-rl">
                    乙巳年 ‧ 心想製所
                 </span>
